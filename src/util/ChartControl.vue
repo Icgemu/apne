@@ -1,30 +1,19 @@
 <template>
-  <el-row>
-    <el-col :span="16">
-      <div id='map' />
-    </el-col>
-    <el-col :span="8">
-      <div id='echart' >
-        <div id='chart1'>1</div>
-        <div id='chart2'>2</div>
-        <div id='chart3'>3</div>
-        <div id='chart4'>4</div>
-      </div>
-    </el-col>
-  </el-row>
+  <el-carousel :interval="4000" height="200px">
+    <el-carousel-item v-for="item in 6" :key="item">
+      <div v-bind:id = "'vchart' + item" class="vchart"></div>
+    </el-carousel-item>
+  </el-carousel>
 </template>
 
 <script>
-import L from "leaflet";
-import echarts from "echarts";
-
-import CustomControl from '../util/CustomControl'
-import VueCityControl from '../util/VueCityControl'
-import ChartControl from '../util/ChartControl'
-export default {
+import Vue from "vue"
+import echarts from 'echarts'
+export default Vue.extend({
+  props: ["map"],
+  name: "ChartControl",
   data: function() {
     return {
-      map: null,
       option1: {
         tooltip: {
           trigger: "axis"
@@ -123,7 +112,7 @@ export default {
           {
             name: "AE",
             type: "line",
-            title:{text:'AAA'},
+            title: { text: "AAA" },
             stack: "总量",
             itemStyle: {
               normal: {
@@ -138,61 +127,45 @@ export default {
       }
     };
   },
-
-  mounted() {
-    debugger;
-    let self = this;
+  mounted(){
+    let self = this
     setTimeout(() => {
-      self.initMap();
       self.initCharts();
     }, 500);
   },
   methods: {
-    initMap: function() {
-      debugger;
-      this.map = L.map("map",{attributionControl:false,zoomControl:false}).setView([23.1268, 113.3047], 10);
-      L.tileLayer('http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}').addTo(this.map)
-      // L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
-      //   this.map
-      // );
-      let component1 = new VueCityControl({propsData: {'map': this.map}})
-      new CustomControl({'component':component1,position:'topleft'}).addTo(this.map)
-      let component2 = new ChartControl({propsData: {'map': this.map}})
-      new CustomControl({'component':component2,position:'bottomright'}).addTo(this.map)
-    },
     initCharts: function() {
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 6; i++) {
         debugger;
-        let chart = echarts.init(document.getElementById("chart" + i));
+        let chart = echarts.init(document.getElementById("vchart" + i));
         chart.setOption(this.option1);
       }
     }
   }
-};
+});
 </script>
+<style>
 
-<style lang="stylus" scoped>
-.el-main .el-row {
-  height: 100%;
-  padding: 5px 0px;
-
-  .el-col {
-    height: 100%;
-
-    div {
-      height: 100%;
-    }
-  }
+.vchart {
+  height: 200px;
+}
+.el-carousel__container {
+  width: 600px;
+}
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
 }
 
-#echart {
-  height: 100%;
+.el-carousel__item:nth-child(2n) {
+  background-color: #fff;
+}
 
-  div {
-    height: 25%;
-    padding :0px 1px;
-    border-bottom :1px dashed #7c7b7b;
-  }
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #fff;
 }
 </style>
 
